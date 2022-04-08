@@ -3,9 +3,7 @@ import { useState } from "react";
 function App() {
   const [toDo, setToDo] = useState("");
   const [toDos, setToDos] = useState([]);
-  function Li(toDo) {
-    return <li>{toDo}</li>;
-  }
+
   const onChangeToDo = (e) => {
     setToDo(e.target.value);
   };
@@ -19,7 +17,6 @@ function App() {
     console.log(toDos);
   };
 
-  const onSubmitCompleted = () => {};
   return (
     <div>
       <h1>Your To Do List First! ({toDos.length})</h1>
@@ -32,7 +29,12 @@ function App() {
         ></input>
         <button type="submit">Submit</button>
       </form>
-      {/* <ul>{toDo ? <Li /> : null}</ul> */}
+      <hr />
+      <ul>
+        {toDos.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
       <div>Your Completed List First!</div>
     </div>
   );
