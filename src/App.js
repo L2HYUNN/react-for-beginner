@@ -2,54 +2,41 @@ import { useEffect, useState } from "react";
 
 function App() {
   const [loading, setLoading] = useState(true);
-  const [coins, setCoins] = useState([]);
-  const [selectedCoin, setSelectedCoin] = useState("");
-  const [inputNumber, setInputNumber] = useState(0);
+  const [movies, setMovies] = useState([]);
+  const getMovies = async () => {
+    const json = await (
+      await fetch(
+        "https://yts.mx/api/v2/list_movies.json?minimum_rating=9&sort_by=year"
+      )
+    ).json();
+
+    setMovies(json.data.movies);
+    setLoading(false);
+  };
   useEffect(() => {
-    fetch("https://api.coinpaprika.com/v1/tickers")
-      .then((response) => response.json())
-      .then((json) => {
-        setCoins(json);
-        setLoading(false);
-      })
-      .then(() => setSelectedCoin(coins[0].quotes.USD.price));
+    getMovies();
   }, []);
-
-  const onChangeInputNumber = (e) => {
-    setInputNumber(e.target.value);
-  };
-
-  const onChange = (e) => {
-    setSelectedCoin(e.target.value);
-  };
 
   return (
     <div>
-      <h1>The Conins! {loading ? "" : `(${coins.length})`}</h1>
       {loading ? (
-        <strong>Loading</strong>
+        <h1>Loading</h1>
       ) : (
-        <select onChange={onChange} value={selectedCoin}>
-          {coins.map((coin) => (
-            <option key={coin.id} value={coin.quotes.USD.price}>
-              {coin.name} ({coin.symbol}): ${Math.floor(coin.quotes.USD.price)}{" "}
-              USD
-            </option>
+        <div>
+          {movies.map((movie) => (
+            <div key={movie.id}>
+              <img src={movie.medium_cover_image}></img>
+              <h2>{movie.title}</h2>
+              <p>{movie.summary}</p>
+              <ul>
+                {movie.genres.map((g) => (
+                  <li key={g}>{g}</li>
+                ))}
+              </ul>
+            </div>
           ))}
-        </select>
+        </div>
       )}
-
-      <input
-        onChange={onChangeInputNumber}
-        type="number"
-        placeholder="What do you change?"
-      ></input>
-      <input
-        type="number"
-        placeholder="Result"
-        disabled
-        value={inputNumber * selectedCoin}
-      ></input>
     </div>
   );
 }
